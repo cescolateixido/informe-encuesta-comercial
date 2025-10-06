@@ -1,9 +1,9 @@
 name: Render informe RMarkdown
 
 on:
-  workflow_dispatch:  # Permite ejecución manual desde GitHub
   schedule:
-    - cron: '0 7 * * 1'  # Cada lunes a las 07:00 UTC
+    - cron: '0 4 * * *'  # Todos los días a las 06:00 CEST (04:00 UTC)
+  workflow_dispatch:      # Permite ejecución manual desde GitHub
 
 jobs:
   render:
@@ -18,7 +18,8 @@ jobs:
 
       - name: Instalar paquetes necesarios
         run: |
-          Rscript -e 'install.packages(c("tidyverse", "googlesheets4", "rmarkdown", "kableExtra"))'
+          Rscript -e 'install.packages("remotes")'
+          Rscript -e 'remotes::install_cran(c("tidyverse", "googlesheets4", "rmarkdown", "kableExtra"))'
 
       - name: Renderizar informe
         run: |
@@ -29,6 +30,6 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add informe.html
-          git commit -m "Informe actualizado automáticamente"
+          git add informe.html || echo "No hay cambios en informe.html"
+          git commit -m "Informe actualizado automáticamente" || echo "Sin cambios que commitear"
           git push
