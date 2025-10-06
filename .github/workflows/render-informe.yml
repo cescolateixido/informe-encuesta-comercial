@@ -3,7 +3,7 @@ name: Render informe RMarkdown
 on:
   schedule:
     - cron: '0 4 * * *'  # Todos los días a las 06:00 CEST (04:00 UTC)
-  workflow_dispatch:      # Permite ejecución manual desde GitHub
+  workflow_dispatch:
 
 jobs:
   render:
@@ -19,7 +19,14 @@ jobs:
       - name: Instalar paquetes necesarios
         run: |
           Rscript -e 'install.packages("remotes")'
-          Rscript -e 'remotes::install_cran(c("tidyverse", "googlesheets4", "rmarkdown", "kableExtra"))'
+          Rscript -e 'remotes::install_cran("googlesheets4")'
+          Rscript -e 'remotes::install_cran("tidyverse")'
+          Rscript -e 'remotes::install_cran("rmarkdown")'
+          Rscript -e 'remotes::install_cran("kableExtra")'
+
+      - name: Verificar instalación de googlesheets4
+        run: |
+          Rscript -e 'if (!requireNamespace("googlesheets4", quietly = TRUE)) stop("googlesheets4 no está disponible")'
 
       - name: Renderizar informe
         run: |
