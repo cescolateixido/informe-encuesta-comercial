@@ -1,0 +1,32 @@
+---
+title: "Informe Encuesta Comercial"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(googlesheets4)
+library(knitr)
+library(kableExtra)
+library(ggplot2)
+
+# Conexión a la hoja de Google Sheets
+url <- "https://docs.google.com/spreadsheets/d/1VRK0NKveuY_g2QnuuCbs9J-ONH9ueYonWDEgfbC_3SM"
+datos <- read_sheet(url)
+digital_puro <- datos %>%
+  mutate(digital = if_else(`¿CON QUÉ SOPORTE TRABAJAN TUS ALUMNOS?` == "100% Licencias digitales", 1, 0)) %>%
+  summarise(porcentaje = mean(digital, na.rm = TRUE) * 100)
+
+digital_puro %>%
+  kable() %>%
+  kable_styling()
+datos %>%
+  count(`¿EN QUÉ ETAPA UTILIZAS EL SOPORTE DIGITAL?`) %>%
+  ggplot(aes(x = reorder(`¿EN QUÉ ETAPA UTILIZAS EL SOPORTE DIGITAL?`, -n), y = n)) +
+  geom_bar(stat = "identity", fill = "#007BFF") +
+  labs(x = "Etapa", y = "Número de centros", title = "Distribución por etapa digital")
+datos %>%
+  count(`¿ESTARÍAIS INTERESADOS EN CONOCER EL NUEVO PROYECTO PARA 2026 QUE ESTAMOS DESARROLLANDO PARA PRIMARIA Y SECUNDARIA?`) %>%
+  ggplot(aes(x = reorder(`¿ESTARÍAIS INTERESADOS EN CONOCER EL NUEVO PROYECTO PARA 2026 QUE ESTAMOS DESARROLLANDO PARA PRIMARIA Y SECUNDARIA?`, -n), y = n)) +
+  geom_bar(stat = "identity", fill = "#28a745") +
+  labs(x = "Respuesta", y = "Número de centros", title = "Interés en el proyecto 2026")
